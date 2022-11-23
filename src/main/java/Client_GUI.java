@@ -1,4 +1,5 @@
 
+import static java.awt.event.KeyEvent.VK_ENTER;
 import java.net.Socket;
 
 /*
@@ -11,7 +12,7 @@ import java.net.Socket;
  * @author Rawrg
  */
 public class Client_GUI extends javax.swing.JFrame {
-
+    Client client;
     /**
      * Creates new form Client_GUI
      */
@@ -54,6 +55,17 @@ public class Client_GUI extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jMessageHistory);
 
         jSendButton.setText("Send");
+        jSendButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSendButtonActionPerformed(evt);
+            }
+        });
+
+        jUserMessage.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jUserMessageKeyPressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -190,6 +202,11 @@ public class Client_GUI extends javax.swing.JFrame {
     private void connectClientToServer(Client client){
         client.connect();
     }
+    private void write(){
+        String message = jUserMessage.getText();
+        jUserMessage.setText("");
+        client.writeToChat(message);
+    }
     private void jPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPortActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jPortActionPerformed
@@ -200,7 +217,7 @@ public class Client_GUI extends javax.swing.JFrame {
         String host = jHost.getText();
         int port = Integer.parseInt(jPort.getText());
         String userName = jUserName.getText();
-        Client client = new Client(host, port, jMessageHistory);
+        client = new Client(host, port, jMessageHistory);
         Runnable runnable = () -> this.connectClientToServer(client);
         Thread t = new Thread(runnable);
         t.start();
@@ -208,6 +225,15 @@ public class Client_GUI extends javax.swing.JFrame {
             System.out.println(ex);
         }
     }//GEN-LAST:event_jConnectButtonActionPerformed
+
+    private void jSendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSendButtonActionPerformed
+        write();
+    }//GEN-LAST:event_jSendButtonActionPerformed
+
+    private void jUserMessageKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jUserMessageKeyPressed
+        if(evt.getKeyCode() == VK_ENTER)
+        write();
+    }//GEN-LAST:event_jUserMessageKeyPressed
 
     /**
      * @param args the command line arguments

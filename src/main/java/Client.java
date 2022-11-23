@@ -18,6 +18,7 @@ public class Client {
     private javax.swing.JTextArea jWindow;
     private BufferedReader in;
     private Socket socket;
+    private PrintWriter out;
     
     public Client(String host, int port, javax.swing.JTextArea jWindow){
         HOST = host;
@@ -25,7 +26,9 @@ public class Client {
         this.jWindow = jWindow;
         
     }
-    
+    public void writeToChat(String message){
+        out.println(message);
+    }
     public void readChat(Socket socket){
         try{in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         while(true){
@@ -51,7 +54,7 @@ public class Client {
     public void connect(){
         try{
             socket = new Socket(HOST, PORT);
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out = new PrintWriter(socket.getOutputStream(), true);
             /**Do some magic shit here*/
             Runnable read = () -> this.readChat(socket);
             Thread t = new Thread(read);
@@ -70,6 +73,5 @@ public class Client {
             System.err.println(e);
             System.exit(-4);
         }
-        System.out.println("Fell out of scope");
     }
 }
