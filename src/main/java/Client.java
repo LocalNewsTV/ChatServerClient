@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 /**
  *
  * @author Rawrg
@@ -16,46 +17,60 @@ public class Client {
     private final String HOST;
     private final int PORT;
     private javax.swing.JTextArea jWindow;
+    private LocalMessageCache messageCache;
     private BufferedReader in;
     private Socket socket;
     private PrintWriter out;
+    private String userName;
+    private boolean activeConnection;
+    private String PASSWORD;
     
-    public Client(String host, int port, javax.swing.JTextArea jWindow){
+    public Client(String host, int port, String userName, String password, javax.swing.JTextArea jWindow){
+        messageCache = new LocalMessageCache(100);
         HOST = host;
         PORT = port;
+        PASSWORD = password;
+        this.userName = userName;
         this.jWindow = jWindow;
         
     }
     public void writeToChat(String message){
-        out.println(message);
+        out.println(userName + ": " + message);
     }
     public void readChat(Socket socket){
         try{in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        while(true){
+        activeConnection = true;
+        out.println(PASSWORD);
+        out.println(userName);
+        while(activeConnection){
             try {
-                String messages = "";
                 boolean holder = false;
-                Thread.sleep(100);
                 while(in.ready()){
-                    messages += in.readLine() + "\n";
+                    messageCache.store(in.readLine());
                     holder = true;
                 }
                 if(holder){
-                    jWindow.setText(messages);
+                    jWindow.setText(messageCache.retrieve());
                 }
             } catch (Exception ex) {
                 System.out.println(ex);
             }
         }
+        socket.close();
         }catch(Exception ex){
+            disconnect();
             System.out.println(ex);
         }
+    }
+    public void disconnect(){
+        out.println(userName + " has disconnected");
+        activeConnection = false;
+        
     }
     public void connect(){
         try{
             socket = new Socket(HOST, PORT);
             out = new PrintWriter(socket.getOutputStream(), true);
-            /**Do some magic shit here*/
             Runnable read = () -> this.readChat(socket);
             Thread t = new Thread(read);
             t.start();
