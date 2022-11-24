@@ -66,7 +66,6 @@ public class Client_GUI extends javax.swing.JFrame {
         jMessageHistory.setLineWrap(true);
         jMessageHistory.setRows(5);
         jMessageHistory.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jMessageHistory.setCaretPosition(jMessageHistory.getDocument().getLength());
         jMessageHistory.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jMessageHistory.setFocusable(false);
         jMessageHistory.setMargin(new java.awt.Insets(5, 10, 2, 2));
@@ -295,8 +294,10 @@ public class Client_GUI extends javax.swing.JFrame {
     }
     private void write(){
         String message = jUserMessage.getText();
-        jUserMessage.setText("");
-        client.writeToChat(message);
+        if(message.length() > 0){
+            jUserMessage.setText("");
+            client.writeToChat(message);
+        }
     }
     private void jPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPortActionPerformed
         // TODO add your handling code here:

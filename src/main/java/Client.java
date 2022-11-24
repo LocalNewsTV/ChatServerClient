@@ -35,7 +35,7 @@ public class Client {
         
     }
     public void writeToChat(String message){
-        out.println(userName + ": " + message);
+        out.println(message);
     }
     public void readChat(Socket socket){
         try{in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -50,7 +50,9 @@ public class Client {
                     holder = true;
                 }
                 if(holder){
-                    jWindow.setText(messageCache.retrieve());
+                    String messageSet = messageCache.retrieve();
+                    jWindow.setText(messageSet);
+                    jWindow.setCaretPosition(messageSet.length() - 1);
                 }
             } catch (Exception ex) {
                 System.out.println(ex);
